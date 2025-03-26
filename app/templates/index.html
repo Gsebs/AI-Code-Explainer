@@ -15,6 +15,23 @@
 <body class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-8 text-center">Multi LLM Code Explainer</h1>
+        
+        <!-- Cost Estimate Section -->
+        <div id="costEstimate" class="mb-8 p-4 bg-gray-800 rounded-lg hidden">
+            <h2 class="text-xl font-semibold mb-4">Cost Estimate</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-gray-400">Input Tokens: <span id="inputTokens" class="text-white">0</span></p>
+                    <p class="text-gray-400">Estimated Output Tokens: <span id="outputTokens" class="text-white">0</span></p>
+                </div>
+                <div>
+                    <p class="text-gray-400">GPT-4 Cost: $<span id="gpt4Cost" class="text-white">0.00</span></p>
+                    <p class="text-gray-400">Claude Cost: $<span id="claudeCost" class="text-white">0.00</span></p>
+                    <p class="text-gray-400 font-bold">Total Cost: $<span id="totalCost" class="text-white">0.00</span></p>
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Code Input Section -->
             <div class="bg-gray-800 p-6 rounded-lg">
@@ -22,7 +39,8 @@
                 <textarea 
                     id="codeInput" 
                     class="w-full h-64 p-4 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Paste your code here..."></textarea>
+                    placeholder="Paste your code here..."
+                    oninput="estimateCost()"></textarea>
                 <button 
                     onclick="explainCode()"
                     class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg w-full transition duration-200">
@@ -52,6 +70,39 @@
     </div>
 
     <script>
+        async function estimateCost() {
+            const code = document.getElementById('codeInput').value;
+            if (!code) {
+                document.getElementById('costEstimate').classList.add('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch('/estimate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code }),
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('costEstimate').classList.remove('hidden');
+                    document.getElementById('inputTokens').textContent = data.input_tokens;
+                    document.getElementById('outputTokens').textContent = data.estimated_output_tokens;
+                    document.getElementById('gpt4Cost').textContent = data.estimated_cost.gpt4_cost.toFixed(4);
+                    document.getElementById('claudeCost').textContent = data.estimated_cost.claude_cost.toFixed(4);
+                    document.getElementById('totalCost').textContent = data.estimated_cost.total_cost.toFixed(4);
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
         async function explainCode() {
             const code = document.getElementById('codeInput').value;
             if (!code) {
@@ -77,6 +128,15 @@
                 if (response.ok) {
                     document.getElementById('gptExplanation').innerText = data.gpt_explanation;
                     document.getElementById('claudeExplanation').innerText = data.claude_explanation;
+                    
+                    // Update actual usage
+                    if (data.usage) {
+                        document.getElementById('inputTokens').textContent = data.usage.input_tokens;
+                        document.getElementById('outputTokens').textContent = data.usage.output_tokens;
+                        document.getElementById('gpt4Cost').textContent = data.usage.cost.gpt4_cost.toFixed(4);
+                        document.getElementById('claudeCost').textContent = data.usage.cost.claude_cost.toFixed(4);
+                        document.getElementById('totalCost').textContent = data.usage.cost.total_cost.toFixed(4);
+                    }
                 } else {
                     throw new Error(data.error || 'Failed to get explanation');
                 }
