@@ -29,16 +29,16 @@ def estimate_tokens(text):
 
 def estimate_cost(input_tokens, output_tokens):
     """Estimate the cost for both APIs."""
-    # GPT-4 costs
-    gpt4_cost = (input_tokens * 0.03 + output_tokens * 0.06) / 1000
+    # GPT-3.5-turbo costs
+    gpt_cost = (input_tokens * 0.0005 + output_tokens * 0.0015) / 1000
     
     # Claude costs
     claude_cost = (input_tokens * 0.003 + output_tokens * 0.015) / 1000
     
     return {
-        'gpt4_cost': gpt4_cost,
+        'gpt4_cost': gpt_cost,
         'claude_cost': claude_cost,
-        'total_cost': gpt4_cost + claude_cost
+        'total_cost': gpt_cost + claude_cost
     }
 
 @app.route('/')
@@ -127,7 +127,7 @@ def get_gpt4_explanation(code, max_tokens=None):
     }
     
     data = {
-        'model': 'gpt-4',
+        'model': 'gpt-3.5-turbo',
         'messages': [
             {'role': 'system', 'content': 'You are a helpful assistant that explains code in plain English.'},
             {'role': 'user', 'content': f'Please explain this code in simple terms:\n\n{code}'}
@@ -144,20 +144,20 @@ def get_gpt4_explanation(code, max_tokens=None):
         
         if response.status_code == 200:
             return response.json()['choices'][0]['message']['content']
-        return f'Error getting GPT-4 explanation: {response.text}'
+        return f'Error getting GPT-3.5 explanation: {response.text}'
     except Exception as e:
         return f'Error: {str(e)}'
 
 def get_claude_explanation(code, max_tokens=None):
     headers = {
         'x-api-key': ANTHROPIC_API_KEY,
-        'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json'
     }
     
     data = {
-        'model': 'claude-3-sonnet-20240229',
-        'max_tokens': max_tokens,
+        'model': 'claude-3-haiku-20240307',
+        'max_tokens': max_tokens if max_tokens else 1024,
         'messages': [
             {
                 'role': 'user',
@@ -170,12 +170,19 @@ def get_claude_explanation(code, max_tokens=None):
         response = requests.post(
             'https://api.anthropic.com/v1/messages',
             headers=headers,
-            json=data
+            json=data,
+            timeout=10
         )
+        
+        response_text = response.text
+        print(f"Claude API Response: {response_text}")  # Debug logging
         
         if response.status_code == 200:
             return response.json()['content'][0]['text']
-        return f'Error getting Claude explanation: {response.text}'
+        elif response.status_code == 401:
+            return f'Authentication error. Please check your Claude API key. Full error: {response_text}'
+        else:
+            return f'Error getting Claude explanation (Status {response.status_code}): {response_text}'
     except Exception as e:
         return f'Error: {str(e)}'
 

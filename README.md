@@ -1,78 +1,113 @@
 # Multi LLM Code Explainer
 
-A web application that explains code using both OpenAI's GPT-4 and Anthropic's Claude 3.5 Sonnet. Get multiple AI perspectives on your code!
+A powerful web application that explains code using multiple Large Language Models (LLMs) - OpenAI's GPT-3.5 and Anthropic's Claude-3. The application provides parallel explanations from both models, allowing users to compare different interpretations of their code.
+
+![Application Screenshot](docs/images/app-screenshot.png)
 
 ## Features
 
-- Paste any code snippet and get explanations from multiple AI models
-- Clean, modern UI with dark mode
-- Real-time explanations
-- Side-by-side comparison of different AI explanations
+- 🚀 Dual AI Code Explanation: Get explanations from both GPT-3.5 and Claude-3
+- 💰 Real-time Cost Estimation: See estimated costs before processing
+- 🔒 Token Limit Management: Automatic handling of token limits
+- 💼 Budget Control: Set maximum cost per request and monthly budgets
+- 🎨 Clean, Modern UI: User-friendly interface for code input and explanations
+- 📊 Usage Statistics: Track token usage and costs
 
-## Prerequisites
+## How It Works
 
-- Python 3.8+
-- OpenAI API Key
-- Anthropic API Key
-- AWS Account (for deployment)
+The application uses a Flask backend to:
+1. Accept code input from users
+2. Estimate token usage and costs
+3. Send the code to both OpenAI and Anthropic APIs
+4. Return parallel explanations from both models
 
-## Local Development Setup
+### Technical Architecture
+
+- **Frontend**: HTML/CSS/JavaScript
+- **Backend**: Python Flask
+- **APIs**: 
+  - OpenAI GPT-3.5
+  - Anthropic Claude-3
+- **Token Management**: tiktoken for accurate token counting
+- **Environment Management**: python-dotenv for secure configuration
+
+## Setup and Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/Gsebs/AI-Code-Explainer.git
-   cd AI-Code-Explainer
-   ```
+```bash
+git clone https://github.com/yourusername/multi-llm-code-explainer.git
+cd multi-llm-code-explainer
+```
 
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+2. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
 3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+pip install -r requirements.txt
+```
 
-4. Create a `.env` file in the root directory with your API keys:
-   ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   ANTHROPIC_API_KEY=your_anthropic_api_key_here
-   ```
+4. Set up environment variables:
+- Copy `.env.example` to `.env`
+- Add your API keys:
+  - Get OpenAI API key from: https://platform.openai.com/
+  - Get Anthropic API key from: https://console.anthropic.com/
 
 5. Run the application:
-   ```bash
-   python app/app.py
-   ```
+```bash
+cd app
+python app.py
+```
 
-6. Open your browser and navigate to `http://localhost:5000`
+6. Visit `http://127.0.0.1:5000` in your browser
 
-## AWS Deployment
+## Security Considerations
 
-1. Configure AWS credentials:
-   ```bash
-   aws configure
-   ```
+- API keys are stored in `.env` file (not committed to Git)
+- Token and cost limits prevent excessive API usage
+- Input validation and sanitization implemented
+- Rate limiting on API requests
 
-2. Add AWS credentials to `.env`:
-   ```
-   AWS_ACCESS_KEY_ID=your_aws_access_key_here
-   AWS_SECRET_ACCESS_KEY=your_aws_secret_key_here
-   AWS_REGION=your_preferred_region
-   ```
+## Cost Management
 
-## Usage
+The application estimates costs based on:
+- Input tokens (code length)
+- Estimated output tokens
+- Current API pricing for both models
 
-1. Visit the application in your web browser
-2. Paste your code in the input box
-3. Click "Submit"
-4. View explanations from both GPT-4 and Claude
+Default limits:
+- Max cost per request: $0.50
+- Monthly budget: $10.00
+
+## Screenshots
+
+### Cost Estimation
+![Cost Estimation](docs/images/cost-estimate.png)
+
+### Code Explanation
+![Code Explanation](docs/images/code-explanation.png)
+
+## Adding Screenshots to Your Repository
+
+1. Create a `docs/images` directory in your repository
+2. Save the screenshots you shared with me as:
+   - `app-screenshot.png`
+   - `cost-estimate.png`
+   - `code-explanation.png`
+3. Add them to the `docs/images` directory
+4. They will be displayed in the README as shown above
 
 ## Contributing
 
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/) 
+MIT License - See LICENSE file for details 
