@@ -1,6 +1,6 @@
 # Multi LLM Code Explainer
 
-AI application that explains code using multiple Large Language Models (LLMs) - OpenAI's GPT-3.5 and Anthropic's Claude-3. The application provides parallel explanations from both models, allowing users to compare different interpretations of their code. (MAIN AI CODE EXPLAINING MODEL PULLED FROM HUGGINGFACE)
+AI application that explains code using multiple Large Language Models (LLMs) - OpenAI's GPT-4.0 and Anthropic's Claude-3. The application provides parallel explanations from both models, allowing users to compare different interpretations of their code. (MAIN AI CODE EXPLAINING MODEL PULLED FROM HUGGINGFACE)
 
 ![Application Screenshot](docs/images/app-screenshot.png)
 
