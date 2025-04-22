@@ -18,7 +18,7 @@ The application uses a Flask backend to:
 - **Frontend**: HTML/CSS/JavaScript
 - **Backend**: Python Flask
 - **APIs**: 
-  - OpenAI GPT-3.5
+  - OpenAI GPT-4.0
   - Anthropic Claude-3
 - **Token Management**: tiktoken for accurate token counting
 - **Environment Management**: python-dotenv for secure configuration
